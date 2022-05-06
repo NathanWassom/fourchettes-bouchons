@@ -21,7 +21,16 @@
       <div class="header-date pull-left">
         <strong><?php echo date("F j, Y, g:i a");?></strong>
       </div>
-      <div class="pull-right clearfix">
+      <div >
+      <a style="margin-left: 180px;
+  margin-top: 10px;" href="#" class="btn btn-info btn-lg"$ >
+          <span class="glyphicon glyphicon-shopping-cart"></span>
+          <span class="badge">42</span>
+        </a>
+      </div>
+      
+      <div style="margin-right: 80px; margin-top: -50px;" class="pull-right clearfix">
+      
         <ul class="info-menu list-inline list-unstyled">
           <li class="profile">
             <a href="#" data-toggle="dropdown" class="toggle" aria-expanded="false">
@@ -30,7 +39,7 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                  <a href="profile.php?id=<?php echo (int)$user['id'];?>">
+                  <a href="profile.php?id=<?php echo (int)$user.['id'];?>">
                       <i class="glyphicon glyphicon-user"></i>
                       Profil
                   </a>
