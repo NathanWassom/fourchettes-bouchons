@@ -430,17 +430,26 @@ function modifierQTeArticle($libelleProduit, $qteProduit)
   //Si le panier existe
   if (creationPanier() && !isVerrouille()) {
     //Si la quantité est positive on modifie sinon on supprime l'article
+    $res = array();
     if ($qteProduit > 0) {
       //Recherche du produit dans le panier
       $positionProduit = array_search($libelleProduit,  $_SESSION['panier']['libelleProduit']);
 
       if ($positionProduit !== false) {
         $_SESSION['panier']['qteProduit'][$positionProduit] = $qteProduit;
+        $res = [
+          'libelleProduit' => $_SESSION['panier']['libelleProduit'][$positionProduit],
+          'qteProduit' => $_SESSION['panier']['qteProduit'][$positionProduit],
+          'prixProduit' => $_SESSION['panier']['prixProduit'][$positionProduit],
+          'montantGlobal' => MontantGlobal()
+        ];
       }
-    } else
-      supprimerArticle($libelleProduit);
-  } else
-    echo "Un problème est survenu veuillez contacter l'administrateur du site.";
+    }
+  } else {
+    $res = ["Un problème est survenu veuillez contacter l'administrateur du site."];
+  }
+
+  return $res;
 }
 function MontantGlobal()
 {

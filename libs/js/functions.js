@@ -95,3 +95,49 @@ function suggetion() {
             autoclose: true
         });
   });
+$(function () {
+    $('.qty').on('change', function () {
+        let qty = $(this).val();
+        let name = $(this).attr('name');
+        console.log(name);
+        var formData = {
+            'name': name,
+            'quantity': qty,
+            'action': 'refresh'
+          };
+            // process the form
+            // $.ajax({
+            //     type        : 'POST',
+            //     url         : 'gestPanier.php',
+            //     data        : formData,
+            //     dataType    : 'json',
+            //     encode      : true
+            // })
+            //     .done(function(data) {
+            //         //console.log(data);
+            //         // $('#product_info').html(data).show();
+            //         // total();
+            //         // $('.datePicker').datepicker('update', new Date());
+            //         console.log('GOOD')
+
+            //     }).fail(function(data) {
+            //         // $('#product_info').html(data).show();
+            //         console.log('error')
+            //     });
+        
+        
+        $.post(
+                "gestPanier.php",
+                {
+                    quantity: qty,
+                    name: name,
+                    action: 'refresh'
+                },
+                function(res, status) {
+                    // var data = JSON.parse(res);
+                    console.log(res);
+                }
+            )
+        // console.log('HELLO')
+    })
+});

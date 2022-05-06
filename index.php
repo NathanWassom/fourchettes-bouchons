@@ -7,7 +7,7 @@
 <div class="login-page">
     <div class="text-center">
        <h1>CONNEXION </h1>
-       <h4>SYSTEME DE GESTION</h4>
+       <h4>GESTION DU RESTAURANT</h4>
      </div>
      <?php echo display_msg($msg); ?>
       <form method="post" action="auth.php" class="clearfix">
