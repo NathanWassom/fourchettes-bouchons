@@ -7,10 +7,15 @@ if ($action !== null) {
   if (!in_array($action, array('ajout', 'suppression', 'refresh')))
     $erreur = true;
 
+
   //récuperation des variables en POST ou GET
   $l = (isset($_POST['name']) ? $_POST['name'] : (isset($_GET['name']) ? $_GET['name'] : null));
   $p = (isset($_POST['price']) ? $_POST['price'] : (isset($_GET['price']) ? $_GET['price'] : null));
   $q = (isset($_POST['quantity']) ? $_POST['quantity'] : (isset($_GET['quantity']) ? $_GET['quantity'] : null));
+  $id = (isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : null));
+  $idProduct = (int) $id;
+  // var_dump($idProduct);
+  // exit;
 
   //Suppression des espaces verticaux
   $l = preg_replace('#\v#', '', $l);
@@ -31,20 +36,23 @@ if ($action !== null) {
   if (!$erreur) {
     switch ($action) {
       case "ajout":
-        ajouterArticle($l, $q, $p);
+        ajouterArticle($l, $q, $p, $idProduct);
         header('Location: add_sale.php');
         break;
 
       case "suppression":
         supprimerArticle($l);
+        header('Location: panier.php');
         break;
 
       case "refresh":
+        // var_dump($q);
+        // exit;
         // for ($i = 0; $i < count($QteArticle); $i++) {
         //   modifierQTeArticle($_SESSION['panier']['libelleProduit'][$i], round($QteArticle[$i]));
         // }
-        return json_encode(modifierQTeArticle($l, $q));
-
+        modifierQTeArticle($l, $q);
+        header('Location: panier.php');
         break;
 
       default:

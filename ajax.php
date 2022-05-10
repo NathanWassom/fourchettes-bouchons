@@ -43,6 +43,7 @@ if (isset($_POST['product_name']) && strlen($_POST['product_name'])) {
         $html  .= "</td>";
         $html .= "<td id=\"s_qty\">";
         $html .= "<input type=\"text\" class=\"form-control\" name=\"quantity\" value=\"1\">";
+        $html .= "<input type=\"hidden\" class=\"form-control\" name=\"id\" value=\"{$result['id']}\">";
         $html  .= "</td>";
         // $html  .= "<td>";
         // $html  .= "<input type=\"text\" class=\"form-control\" name=\"total\" value=\"{$result['sale_price']}\">";

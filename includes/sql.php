@@ -281,11 +281,12 @@ function find_recent_product_added($limit)
 function find_higest_saleing_product($limit)
 {
   global $db;
-  $sql  = "SELECT p.name, COUNT(s.product_id) AS totalSold, SUM(s.qty) AS totalQty";
-  $sql .= " FROM sales s";
-  $sql .= " LEFT JOIN products p ON p.id = s.product_id ";
-  $sql .= " GROUP BY s.product_id";
-  $sql .= " ORDER BY SUM(s.qty) DESC LIMIT " . $db->escape((int)$limit);
+  $sql  = "SELECT p.name, COUNT(l.product_id) AS totalSold, SUM(l.qty) AS totalQty";
+  $sql .= " FROM ligne_commande l";
+  $sql .= " INNER JOIN sales s ON s.id = l.sales_id";
+  $sql .= " INNER JOIN products p ON p.id = l.product_id";
+  $sql .= " GROUP BY l.product_id";
+  $sql .= " ORDER BY SUM(l.qty) DESC LIMIT " . $db->escape((int)$limit);
   return $db->query($sql);
 }
 /*--------------------------------------------------------------*/
@@ -294,10 +295,24 @@ function find_higest_saleing_product($limit)
 function find_all_sale()
 {
   global $db;
-  $sql  = "SELECT s.id,s.qty,s.price,s.date,p.name";
+  $sql  = "SELECT s.id,s.price,s.date,s.status,u.name";
   $sql .= " FROM sales s";
-  $sql .= " LEFT JOIN products p ON s.product_id = p.id";
+  $sql .= " LEFT JOIN users u ON s.user_id = u.id";
   $sql .= " ORDER BY s.date DESC";
+  return find_by_sql($sql);
+}
+/*--------------------------------------------------------------*/
+/* Function for find all ligne_commande
+ /*--------------------------------------------------------------*/
+function find_all_ligne_commande_by_sale_id($sale_id)
+{
+  global $db;
+  $sql  = "SELECT l.id,s.price,s.date,s.status, p.name, p.sale_price, l.qty";
+  $sql .= " FROM ligne_commande l";
+  $sql .= " INNER JOIN sales s ON s.id = l.sales_id";
+  $sql .= " INNER JOIN users u ON s.user_id = u.id";
+  $sql .= " INNER JOIN products p ON p.id = l.product_id";
+  $sql .= " WHERE l.sales_id = " . $sale_id;
   return find_by_sql($sql);
 }
 /*--------------------------------------------------------------*/
@@ -306,9 +321,9 @@ function find_all_sale()
 function find_recent_sale_added($limit)
 {
   global $db;
-  $sql  = "SELECT s.id,s.qty,s.price,s.date,p.name";
+  $sql  = "SELECT s.id,s.price,s.date,u.name";
   $sql .= " FROM sales s";
-  $sql .= " LEFT JOIN products p ON s.product_id = p.id";
+  $sql .= " INNER JOIN users u ON s.user_id = u.id";
   $sql .= " ORDER BY s.date DESC LIMIT " . $db->escape((int)$limit);
   return find_by_sql($sql);
 }
@@ -374,6 +389,7 @@ function creationPanier()
     $_SESSION['panier']['libelleProduit'] = array();
     $_SESSION['panier']['qteProduit'] = array();
     $_SESSION['panier']['prixProduit'] = array();
+    $_SESSION['panier']['idProduct'] = array();
     $_SESSION['panier']['verrou'] = false;
   }
   return true;
@@ -381,7 +397,7 @@ function creationPanier()
 /*--------------------------------------------------------------*/
 /* Function for add product in cart                              */
 /*--------------------------------------------------------------*/
-function ajouterArticle($libelleProduit, $qteProduit, $prixProduit)
+function ajouterArticle($libelleProduit, $qteProduit, $prixProduit, $idProduct)
 {
 
   //Si le panier existe
@@ -396,6 +412,7 @@ function ajouterArticle($libelleProduit, $qteProduit, $prixProduit)
       array_push($_SESSION['panier']['libelleProduit'], $libelleProduit);
       array_push($_SESSION['panier']['qteProduit'], $qteProduit);
       array_push($_SESSION['panier']['prixProduit'], $prixProduit);
+      array_push($_SESSION['panier']['idProduct'], $idProduct);
     }
   } else
     echo "Un problème est survenu veuillez contacter l'administrateur du site.";
@@ -409,6 +426,7 @@ function supprimerArticle($libelleProduit)
     $tmp['libelleProduit'] = array();
     $tmp['qteProduit'] = array();
     $tmp['prixProduit'] = array();
+    $tmp['idProduct'] = array();
     $tmp['verrou'] = $_SESSION['panier']['verrou'];
 
     for ($i = 0; $i < count($_SESSION['panier']['libelleProduit']); $i++) {
@@ -416,6 +434,7 @@ function supprimerArticle($libelleProduit)
         array_push($tmp['libelleProduit'], $_SESSION['panier']['libelleProduit'][$i]);
         array_push($tmp['qteProduit'], $_SESSION['panier']['qteProduit'][$i]);
         array_push($tmp['prixProduit'], $_SESSION['panier']['prixProduit'][$i]);
+        array_push($tmp['idProduct'], $_SESSION['panier']['idProduct'][$i]);
       }
     }
     //On remplace le panier en session par notre panier temporaire à jour
@@ -441,6 +460,7 @@ function modifierQTeArticle($libelleProduit, $qteProduit)
           'libelleProduit' => $_SESSION['panier']['libelleProduit'][$positionProduit],
           'qteProduit' => $_SESSION['panier']['qteProduit'][$positionProduit],
           'prixProduit' => $_SESSION['panier']['prixProduit'][$positionProduit],
+          'idProduct' => $_SESSION['panier']['idProduct'][$positionProduit],
           'montantGlobal' => MontantGlobal()
         ];
       }
